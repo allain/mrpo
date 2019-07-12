@@ -57,4 +57,29 @@ Monorepos are just mrpo projects based on metarepo builder templates
 }
 ```
 
-The monorepo builder will walk the directory structure looking for nested `mrpo.json` files and build them.
+The monorepo builder will walk the directory structure looking for nested `mrpo.json` files and expose all of their commands.
+
+Running `mrpo build` would do some dependency analysis on the sub projects and infer a sequence in which to run "mrpo build recursively on them".
+
+## Builder API
+
+In order to have things be as flexible as possible, the builders should provide an API that's trivial
+
+It would need to support:
+1. Querying for supported commands
+2. Invoking them
+3. Cleanly terminating them (for things like mrpo test --watch and mrpo dev)
+
+In the JavaScript world we could just export an object:
+```js
+{
+  listCommands():String[],
+  exec(commandName, args) : Promise,
+  stop(commandName)
+}
+```
+For things like exposing dockerfile builds we could just call out to a shell command that conforms to the same API.
+```bash
+./builder # outputs command names on separate lines
+./builder command #runs the command and stays running till done or terminated by sending a nice SIGINT
+```
