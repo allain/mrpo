@@ -18,7 +18,7 @@ As much as possible my toolchain should get out of my way.
 
 Install mrpo globally `npm install --global mrpo`
 
-Create a minimalistic package.json file and declare what project to use:
+Create a minimalistic mrpo.json file and declare what mrpo builder the project uses:
 
 ```json
 {
@@ -26,15 +26,15 @@ Create a minimalistic package.json file and declare what project to use:
   "version": "1.0.0",
   
   "mrpo": {
-    "type": "mrpo-builder-typescript@^1.0.0",
-    "src": "src",
-    "dist": "dist"
+    "type": "@mrpo/builder-typescript-pkg@^1.0.0",
   }
 }
 ```
 
 Run commands using mrpo. Commands are exposed by the builder:
 ```bash
+# display available commands
+mrpo 
 mrpo build
 mrpo clean
 mrpo publish
@@ -45,7 +45,8 @@ mrpo test --watch
 ```
 
 Things to note:
-1. package.json does not require dependencies or devDependencies the builder infers them based on static analysis of the source code.
+1. mrpo.json does not declare dependencies or devDependencies. The builder infers them based on static analysis of the source code, but that's up to the builder. the mrpo config depends on the builder being used.
+2. The actual type specification can be anything, I'm using npm modules, but they could just as easily be docker images, so in principle the mrpo could be used to build go aswell.
 
 ## Monorepos
 
@@ -57,10 +58,9 @@ Monorepos are just mrpo projects based on metarepo builder templates
   "version": "1.0.0",
   
   "mrpo": {
-    "type": "mrpo-builder-monorepo",
-    "packages": [
-      "packages/example1"
-    ]
+    "type": "@mrpo/builder-monorepo",
   }
 }
 ```
+
+The monorepo builder will walk the directory structure looking for nested `mrpo.json` files and build them.
