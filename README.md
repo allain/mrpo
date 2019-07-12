@@ -24,10 +24,7 @@ Create a minimalistic mrpo.json file and declare what mrpo builder the project u
 {
   "name": "example1",
   "version": "1.0.0",
-  
-  "mrpo": {
-    "type": "@mrpo/builder-typescript-pkg@^1.0.0",
-  }
+  "type": "@mrpo/builder-typescript-pkg@^1.0.0"
 }
 ```
 
@@ -56,10 +53,7 @@ Monorepos are just mrpo projects based on metarepo builder templates
 { 
   "name": "example-monorepo",
   "version": "1.0.0",
-  
-  "mrpo": {
-    "type": "@mrpo/builder-monorepo",
-  }
+  "type": "@mrpo/builder-monorepo",
 }
 ```
 
