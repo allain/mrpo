@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# This is temporary while developing
+
+npm install
+cd bundlers/javascript-pkg-bundler
+npm install
+cd ../../
+npm install -g

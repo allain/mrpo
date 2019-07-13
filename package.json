@@ -1,0 +1,40 @@
+{
+  "name": "mrpo",
+  "version": "0.0.0",
+  "bin": "./bin/mrpo-bin.js",
+  "description": "An experimental build tool that aims to destroy toolchains.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "fs-extra": "^8.1.0",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/debug": "^4.1.4",
+    "@types/jest": "^24.0.15",
+    "collect-console": "^1.0.1",
+    "debug": "^4.1.1",
+    "jest": "^24.8.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allain/mrpo.git"
+  },
+  "keywords": [
+    "bundler",
+    "monorepo"
+  ],
+  "author": "Allain Lalonde <allain.lalonde@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/allain/mrpo/issues"
+  },
+  "homepage": "https://github.com/allain/mrpo#readme"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "javascript-pkg-example",
+  "version": "0.1.0",
+  "bundler": "../../bundlers/javascript-pkg-bundler"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "javascript-pkg-bundler",
+  "version": "0.0.0",
+  "description": "A bundler for javascript npm packages.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@pika/pack": "^0.4.0",
+    "@pika/plugin-build-node": "^0.4.0",
+    "@pika/plugin-build-web": "^0.4.0",
+    "@pika/plugin-standard-pkg": "^0.4.0",
+    "execa": "^2.0.3",
+    "fs-extra": "^8.1.0"
+  }
+}
