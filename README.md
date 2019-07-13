@@ -2,7 +2,13 @@
 
 An experiment on writing a build tool that can grow to support monorepos trivially.
 
-Note: This project is currently only dream code. No real project exists.
+** WIP ** - if you want to actually try it do this:
+
+```bash
+npm run setup
+cd examples/javascript-pkg
+mrpo build
+```
 
 ## Pain Points
 

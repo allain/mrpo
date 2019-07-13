@@ -21,6 +21,7 @@
     "jest": "^24.8.0"
   },
   "scripts": {
+    "setup": "./scripts/setup",
     "test": "jest"
   },
   "repository": {
