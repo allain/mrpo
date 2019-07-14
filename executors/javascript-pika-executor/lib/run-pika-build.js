@@ -12,7 +12,7 @@ const packBin = resolveBin("pack")
  * @returns {import('execa').ExecaChildProcess}
  */
 function runPikaBuild(buildPath, distPath) {
-  const execution = execa(packBin, ["build", "--silent", "--cwd", buildPath])
+  const execution = execa(packBin, ["build", "--cwd", buildPath])
   execution.stdout.pipe(process.stdout)
   execution.stderr.pipe(process.stderr)
 

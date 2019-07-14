@@ -7,9 +7,6 @@ const DepsCollector = require("./DepsCollector")
 async function extractExternalDeps(rootPath) {
   const collector = new DepsCollector()
   await collector.updateFile(rootPath)
-
-  console.log(collector)
-
   return collector.dependencies
 }
 

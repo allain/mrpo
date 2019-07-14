@@ -1,7 +1,7 @@
 const execa = require("execa")
 const fs = require("fs-extra")
 const path = require("path")
-const debug = require("debug")("mrpo:javacsript-pkg-executor")
+const debug = require("debug")("mrpo:javacsript-pika-executor")
 const chokidar = require("chokidar")
 
 const buildProject = require("../lib/build-project")

@@ -1,7 +1,7 @@
 import toLower from "lodash.tolower"
-import toUpper from "lodash.toupper"
+// import toUpper from "lodash.toupper"
 
 export default function greet() {
   console.log(toLower("HELLO"))
-  console.log(toUpper("hello"))
+  // console.log(toUpper("hello"))
 }
