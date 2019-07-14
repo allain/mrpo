@@ -1,7 +1,7 @@
 {
-  "name": "javascript-pika-executor",
+  "name": "@mrpo/javascript-pika-executor",
   "version": "0.0.0",
-  "description": "A executor for javascript npm packages.",
+  "description": "A mrpo executor that uses pika under the hood to build npm modules.",
   "main": "index.js",
   "scripts": {
     "test": "jest"

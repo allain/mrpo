@@ -1,6 +1,6 @@
 # Mr Po
 
-An experiment on writing a build tool that can grow to support monorepos trivially.
+An experiment on writing a near invisible developer toolchain.
 
 ** WIP ** - if you want to actually try it do this:
 

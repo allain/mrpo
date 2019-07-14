@@ -1,16 +1,16 @@
-const Executor = require("../src/Executor")
+const SimpleExecutor = require("../src/SimpleExecutor")
 const CancelablePromise = require("p-cancelable")
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe("Executor", () => {
   it("can be created empty", async () => {
-    const executor = new Executor()
+    const executor = new SimpleExecutor()
     return expect(await executor.listCommands()).toEqual([])
   })
 
   it("supports simple commands which are not cancellable", async () => {
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       noop: async () => {}
     })
 
@@ -23,7 +23,7 @@ describe("Executor", () => {
 
   it("supports simple synchronous commands", async () => {
     let calls = 0
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       synchronous() {
         calls++
       }
@@ -39,7 +39,7 @@ describe("Executor", () => {
 
   it("supports simple asynchronous commands", async () => {
     let calls = 0
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       async synchronous() {
         calls++
       }
@@ -54,7 +54,7 @@ describe("Executor", () => {
   it("supports {start,stop} commands", async () => {
     let ticks = 0
 
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       fancy: {
         stopped: false,
         start() {
@@ -77,7 +77,7 @@ describe("Executor", () => {
 
     const result = executor.exec("fancy")
     expect(result.then).toBeInstanceOf(Function)
-    await sleep(20)
+    await sleep(100)
     await result.cancel()
     await result
     return expect(ticks).toBeGreaterThan(5)
@@ -86,7 +86,7 @@ describe("Executor", () => {
   it("supports returning CancelablePromise from simple command", async () => {
     let ticks = 0
 
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       fancy() {
         return new CancelablePromise((resolve, _, onCancel) => {
           onCancel.shouldReject = false
@@ -112,7 +112,7 @@ describe("Executor", () => {
   })
 
   it("rejects when synchronous action throws", async () => {
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       throwy() {
         throw new Error("Test")
       }
@@ -122,7 +122,7 @@ describe("Executor", () => {
   })
 
   it("rejects when synchronous start action throws", async () => {
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       throwy: {
         start() {
           throw new Error("Test")
@@ -135,7 +135,7 @@ describe("Executor", () => {
   })
 
   it("rejects when commadn is neither function nor object", () => {
-    const executor = new Executor({
+    const executor = new SimpleExecutor({
       invalid: []
     })
 

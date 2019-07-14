@@ -4,6 +4,8 @@ const debug = require("debug")("mrpo")
 const chalk = require("chalk")
 const CancelablePromise = require("p-cancelable")
 const Executor = require("./Executor")
+const SimpleExecutor = require("./SimpleExecutor")
+const CompositeExecutor = require("./CompositeExecutor")
 
 const isObject = require("./lib/is-object")
 
@@ -23,11 +25,15 @@ class MrPoException extends Error {
 class MrPo {
   /**
    *
-   * @param {{cwd:string, executor:Executor, name:string, version:string}}options
+   * @param {{cwd:string, executor:Executor, executors: Executor[], name:string, version:string}}options
    */
   constructor(options) {
-    const { executor, ...config } = options
-    this._executor = executor
+    const { executor, executors, ...config } = options
+    if (executor && executors)
+      throw new MrPoException(
+        "only executor or executors may be given at the same time"
+      )
+    this._executor = executors ? new CompositeExecutor(executors) : executor
     this._config = config
   }
 
@@ -56,7 +62,7 @@ class MrPo {
 }
 
 /**
- * @param {any[]} args
+ * @param {object} info
  * @returns {Promise<Object>}
  */
 async function prepareInfo(info) {
@@ -94,7 +100,7 @@ async function prepareExecutor(info) {
 
   if (isObject(executor) && !(executor instanceof Executor)) {
     // executor is a commands map
-    executor = new Executor(executor, info)
+    executor = new SimpleExecutor(executor, info)
   }
 
   if (!(executor instanceof Executor)) {

@@ -2,7 +2,7 @@
   "name": "mrpo",
   "version": "0.0.0",
   "bin": "./bin/mrpo-bin.js",
-  "description": "An experimental build tool that aims to destroy toolchains.",
+  "description": "An experiment on writing a near invisible developer toolchain.",
   "main": "index.js",
   "directories": {
     "example": "examples"

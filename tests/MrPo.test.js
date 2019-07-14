@@ -9,10 +9,9 @@ describe("mrpo", () => {
     return expect(
       MrPo.build({
         name: "test",
-        version: "1.0.0",
-        executor: []
+        version: "1.0.0"
       })
-    ).rejects.toThrow("invalid executor spec: []")
+    ).rejects.toThrow("invalid executor spec: undefined")
   })
 
   it("rejects if build param is not object or string", async () => {
@@ -51,6 +50,8 @@ describe("mrpo", () => {
       "synchronous"
     ])
   })
+
+  it("can be constructed by passing multiple mrpo executors", async () => {})
 
   it("can be constructed by passing an object for config", async () => {
     const mrpo = await MrPo.build({
