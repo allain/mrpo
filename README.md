@@ -2,19 +2,6 @@
 
 An experiment on writing a near invisible developer toolchain.
 
-** WIP ** - if you want to actually try it do this:
-
-```bash
-npm run setup
-cd examples/javascript-pkg
-
-# One time build
-mrpo build
-
-# Watching build, runs till killed with Ctrl+C
-mrpo dev
-```
-
 ## Pain Points
 
 I absolutely hate having to mainting toolchains for my projects. Dependency management alone is enough to drive me to drink.
@@ -36,7 +23,7 @@ Create a minimalistic mrpo.json file and declare what mrpo executor the project 
 {
   "name": "example1",
   "version": "1.0.0",
-  "executor": "@mrpo/typescript-pika-executor@^1.0.0"
+  "executor": "mrpo-executor-pika-js"
 }
 ```
 
@@ -45,20 +32,18 @@ Run commands using mrpo. Commands are exposed by the executor:
 ```bash
 mrpo #to display a list of available commands
 mrpo build
-mrpo clean
-mrpo publish
-mrpo run
 mrpo dev
-mrpo test
-mrpo test --watch
+mrpo deps
 ```
 
 Things to note:
 
-1. mrpo.json does not declare dependencies or devDependencies. The executor infers them based on static analysis of the source code, but that's up to the executor. the mrpo config depends on the executor being used.
+1. mrpo.json does not declare dependencies or devDependencies (unless you want to pin something down). They are infered by the executor using static analysis.
 2. The actual type specification can be anything, I'm using npm modules, but they could just as easily be docker images, so in principle the mrpo could be used to build go aswell.
 
 ## Monorepos
+
+<strong>NOTE: TODO</strong>
 
 Monorepos are just mrpo projects based on metarepo exector.
 
@@ -66,13 +51,13 @@ Monorepos are just mrpo projects based on metarepo exector.
 {
   "name": "example-monorepo",
   "version": "1.0.0",
-  "executor": "@mrpo/executor-monorepo"
+  "executor": "mrpo-executor-monorepo"
 }
 ```
 
 The monorepo executor will walk the directory structure looking for nested `mrpo.json` files and expose all of their commands.
 
-Running `mrpo build` would do some dependency analysis on the sub projects and infer a sequence in which to run "mrpo build recursively on them".
+Running `mrpo build` would do some dependency analysis on the sub projects and infer a sequence in which to run `mrpo build` recursively on them.
 
 ## Executor API
 
@@ -84,19 +69,14 @@ It would need to support:
 2. Invoking them
 3. Cleanly terminating them (for things like mrpo test --watch and mrpo dev)
 
-In the JavaScript world we could just export an object:
+At the moment I've crafted up a SimpleExecutor interface that can expose this:
 
 ```js
 {
-  listCommands():String[],
-  exec(commandName, args) : Promise,
-  stop(commandName)
+  async build() { ... }
+  dev: {
+    async start() {}
+    stop() {}
+  }
 }
-```
-
-For things like exposing dockerfile builds we could just call out to a shell command that conforms to the same API.
-
-```bash
-./executor # outputs command names on separate lines
-./executor command #runs the command and stays running till done or terminated by sending a nice SIGINT
 ```
