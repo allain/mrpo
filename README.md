@@ -45,7 +45,7 @@ Things to note:
 
 <strong>NOTE: TODO</strong>
 
-Monorepos are just mrpo projects based on metarepo exector.
+Monorepos are just mrpo projects based on monorepo executor.
 
 ```json
 {
