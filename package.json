@@ -1,6 +1,6 @@
 {
   "name": "mrpo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "bin": "./bin/mrpo-bin.js",
   "description": "An experiment on writing a near invisible developer toolchain.",
   "main": "index.js",
