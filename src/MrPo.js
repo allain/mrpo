@@ -6,7 +6,7 @@ const CancelablePromise = require("p-cancelable")
 const Executor = require("./Executor")
 const SimpleExecutor = require("./SimpleExecutor")
 const CompositeExecutor = require("./CompositeExecutor")
-
+const execa = require("execa")
 const isObject = require("./lib/is-object")
 
 class MrPoException extends Error {
@@ -90,12 +90,23 @@ async function prepareInfo(info) {
 async function prepareExecutor(info) {
   let { cwd, executor } = info
   if (typeof executor === "string") {
-    const executorPath = require.resolve(path.resolve(cwd, executor))
-
-    if (await fs.pathExists(executorPath)) {
+    try {
+      const executorPath = require.resolve(executor, { paths: [cwd] })
       debug("using executor at %s", chalk.green(executorPath))
       executor = require(executorPath)
+    } catch (err) {
+      console.log("installing executor", executor)
+      fs.ensureDir(path.resolve(cwd, "node_modules"))
+
+      const installation = execa("npm", ["install", executor], { cwd })
+      installation.stdout.pipe(process.stdout)
+      installation.stderr.pipe(process.stderr)
+      await installation
+
+      const executorPath = require.resolve(executor, { paths: [cwd] })
+      executor = require(executorPath)
     }
+    executor = executor.default || executor
   }
 
   if (isObject(executor) && !(executor instanceof Executor)) {

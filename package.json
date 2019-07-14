@@ -10,7 +10,10 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
+    "lodash.tolower": "^4.1.2",
+    "lodash.toupper": "^4.1.2",
     "minimist": "^1.2.0",
+    "mrpo-executor-pika-js": "^0.1.2",
     "p-cancelable": "^2.0.0"
   },
   "devDependencies": {
