@@ -27,7 +27,7 @@ class Executor {
         let result
         try {
           await Promise.resolve().then(() => {
-            result = command(args, this._config)
+            result = command(this._config, args)
           })
         } catch (err) {
           result = Promise.reject(err)
@@ -56,16 +56,16 @@ class Executor {
 
         let result = null
         try {
-          result = command.start(args, this._config)
+          result = command.start(this._config, args)
+          onCancel(() => command.stop())
         } catch (err) {
           reject(err)
+          return
         }
 
-        result.then(resolve, reject)
-
-        onCancel(() => command.stop())
+        result && result.then ? result.then(resolve, reject) : resolve(result)
       } else {
-        throw new Error(`invalid command "${commandName}"`)
+        reject(new Error(`invalid command "${commandName}"`))
       }
     })
   }

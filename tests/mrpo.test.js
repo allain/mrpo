@@ -6,7 +6,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const debug = require("debug")("mrpo:test")
 describe("mrpo", () => {
   it("rejects if it cannot determine executor", async () => {
-    expect(
+    return expect(
       MrPo.build({
         name: "test",
         version: "1.0.0",
@@ -59,7 +59,7 @@ describe("mrpo", () => {
       version: "1.0.0",
       executor: path.resolve(__dirname, "test-executor")
     })
-    expect(mrpo).toBeDefined()
+    return expect(mrpo).toBeDefined()
   })
 
   it("returns command names in alphabetical order", async () => {
@@ -71,7 +71,7 @@ describe("mrpo", () => {
     })
 
     const commandNames = await mrpo.listCommands()
-    expect([...commandNames]).toEqual(commandNames.sort())
+    return expect([...commandNames]).toEqual(commandNames.sort())
   })
 
   it("works when executor is given as path to executor", async () => {
@@ -83,7 +83,7 @@ describe("mrpo", () => {
     })
 
     const commandNames = await mrpo.listCommands()
-    expect(commandNames).not.toHaveLength(0)
+    return expect(commandNames).not.toHaveLength(0)
   })
 
   it("exposes exec command", async () => {
@@ -113,7 +113,7 @@ describe("mrpo", () => {
     const mrpo = await MrPo.build(config)
 
     await mrpo.exec("synchronous")
-    expect(executor.synchronous).toHaveBeenCalledWith({}, config)
+    return expect(executor.synchronous).toHaveBeenCalledWith(config, {})
   })
 
   it("canceling an exec causes result promise to resolve", async () => {

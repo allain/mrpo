@@ -36,7 +36,7 @@ async function main(argv = process.argv) {
 
   debug("target path %s", preparedArgs.targetPath)
 
-  const mrpo = await MrPo.build(preparedArgs.targetPath, preparedArgs.options)
+  const mrpo = await MrPo.build(preparedArgs.targetPath)
 
   if (preparedArgs.params.length === 0) {
     // output available commands
@@ -53,7 +53,7 @@ async function main(argv = process.argv) {
   function stop(args) {
     if (running) {
       running = false
-      return execution.stop()
+      execution.cancel()
     }
   }
 

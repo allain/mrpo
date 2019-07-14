@@ -1,3 +1,4 @@
 module.exports = {
-  build: require("./build")
+  build: require("./commands/build"),
+  dev: require("./commands/dev")
 }

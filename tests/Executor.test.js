@@ -6,7 +6,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 describe("Executor", () => {
   it("can be created empty", async () => {
     const executor = new Executor()
-    expect(await executor.listCommands()).toEqual([])
+    return expect(await executor.listCommands()).toEqual([])
   })
 
   it("supports simple commands which are not cancellable", async () => {
@@ -18,6 +18,7 @@ describe("Executor", () => {
     expect(execution.then).toBeInstanceOf(Function)
     expect(execution.catch).toBeInstanceOf(Function)
     expect(execution.cancel).toBeInstanceOf(Function)
+    return execution
   })
 
   it("supports simple synchronous commands", async () => {
@@ -33,7 +34,7 @@ describe("Executor", () => {
     // result is async even if action is synchronous
     expect(result.then).toBeInstanceOf(Function)
     await result
-    expect(calls).toEqual(1) // does eventually call command
+    return expect(calls).toEqual(1) // does eventually call command
   })
 
   it("supports simple asynchronous commands", async () => {
@@ -47,7 +48,7 @@ describe("Executor", () => {
     const result = executor.exec("synchronous")
     expect(result.then).toBeInstanceOf(Function)
     await result
-    expect(calls).toEqual(1) // does eventually call command
+    return expect(calls).toEqual(1) // does eventually call command
   })
 
   it("supports {start,stop} commands", async () => {
@@ -79,7 +80,7 @@ describe("Executor", () => {
     await sleep(20)
     await result.cancel()
     await result
-    expect(ticks).toBeGreaterThan(5)
+    return expect(ticks).toBeGreaterThan(5)
   })
 
   it("supports returning CancelablePromise from simple command", async () => {
@@ -107,7 +108,7 @@ describe("Executor", () => {
     await sleep(20)
     await result.cancel()
     await result
-    expect(ticks).toBeGreaterThan(5)
+    await expect(ticks).toBeGreaterThan(5)
   })
 
   it("rejects when synchronous action throws", async () => {
@@ -117,7 +118,7 @@ describe("Executor", () => {
       }
     })
 
-    expect(executor.exec("throwy")).rejects.toThrow("Test")
+    await expect(executor.exec("throwy")).rejects.toThrow("Test")
   })
 
   it("rejects when synchronous start action throws", async () => {
@@ -130,7 +131,7 @@ describe("Executor", () => {
       }
     })
 
-    expect(executor.exec("throwy")).rejects.toThrow("Test")
+    await expect(executor.exec("throwy")).rejects.toThrow("Test")
   })
 
   it("rejects when commadn is neither function nor object", () => {
@@ -138,7 +139,7 @@ describe("Executor", () => {
       invalid: []
     })
 
-    expect(executor.exec("invalid")).rejects.toThrow(
+    return expect(executor.exec("invalid")).rejects.toThrow(
       'invalid command "invalid"'
     )
   })
