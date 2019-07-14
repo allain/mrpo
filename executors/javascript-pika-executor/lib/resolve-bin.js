@@ -1,1 +1,1 @@
-module.exports = name => require.resolve(".bin/pack", { paths: [__dirname] })
+module.exports = name => require.resolve(`.bin/${name}`, { paths: [__dirname] })

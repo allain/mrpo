@@ -7,7 +7,12 @@ An experiment on writing a build tool that can grow to support monorepos trivial
 ```bash
 npm run setup
 cd examples/javascript-pkg
+
+# One time build
 mrpo build
+
+# Watching build, runs till killed with Ctrl+C
+mrpo dev
 ```
 
 ## Pain Points
@@ -31,7 +36,7 @@ Create a minimalistic mrpo.json file and declare what mrpo executor the project 
 {
   "name": "example1",
   "version": "1.0.0",
-  "executor": "@mrpo/typescript-pkg-executor@^1.0.0"
+  "executor": "@mrpo/typescript-pika-executor@^1.0.0"
 }
 ```
 

@@ -2,7 +2,7 @@ import greet from "./included.js"
 
 class A {
   async test() {
-    console.log("HERE")
+    console.log("HERE Again")
   }
 }
 

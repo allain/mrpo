@@ -2,9 +2,9 @@ const execa = require("execa")
 const fs = require("fs-extra")
 const path = require("path")
 const debug = require("debug")("mrpo:javacsript-pkg-executor")
-
+const runPikaBuild = require("../lib/run-pika-build")
 const buildProject = require("../lib/build-project")
-const resolveBin = require("../lib/resolve-bin")
+const deployNodeModules = require("../lib/deploy-node-modules")
 
 module.exports = {
   /** @type {import('execa').ExecaChildPromise} */
@@ -14,29 +14,21 @@ module.exports = {
     const buildPath = await buildProject(config)
     debug("generated at %s", buildPath)
 
-    const packBin = resolveBin("pack")
+    debug("deploying node_modules")
+    await deployNodeModules(buildPath, config)
+    debug("done")
 
-    const execution = (this.execution = execa(packBin, [
-      "build",
-      "--cwd",
-      buildPath
-    ]))
-    execution.stdout.pipe(process.stdout)
-    execution.stderr.pipe(process.stderr)
-    await execution
-
+    const execution = runPikaBuild(buildPath, path.resolve(config.cwd, "dist"))
     execution.on("exit", () => {
       this.execution = null
     })
+    await execution
 
-    const distPath = path.resolve(config.cwd, "dist")
-    await fs.remove(distPath)
-    await fs.move(path.resolve(buildPath, "pkg"), distPath)
     if (config.keep) {
       debug("keeping build project")
     } else {
       debug("destroying build project")
-      await fs.remove(buildPath)
+      // await fs.remove(buildPath)
     }
   },
 
