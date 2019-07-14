@@ -1,5 +1,5 @@
 {
-  "name": "javascript-pkg-executor",
+  "name": "javascript-pika-executor",
   "version": "0.0.0",
   "description": "A executor for javascript npm packages.",
   "main": "index.js",

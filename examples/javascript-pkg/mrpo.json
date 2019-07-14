@@ -1,5 +1,5 @@
 {
-  "name": "javascript-pkg-example",
+  "name": "javascript-example",
   "version": "0.1.0",
-  "executor": "../../executors/javascript-pkg-executor"
+  "executor": "../../executors/javascript-pika-executor"
 }
