@@ -1,4 +1,4 @@
-# javascript-pkg-bundler
+# javascript-pkg-execturo
 
 A bundler for Javascript npm modules. It uses pika under the hood to do the heavy lifting.
 

@@ -3,7 +3,7 @@ const fs = require("fs-extra")
 const path = require("path")
 const debug = require("debug")("mrpo")
 
-const MrPo = require("../src/mrpo")
+const MrPo = require("../src/MrPo")
 
 module.exports.prepareArgs = prepareArgs
 
@@ -48,7 +48,7 @@ async function main(argv = process.argv) {
   const [commandName, ...params] = preparedArgs.params
 
   let running = true
-  const execution = await mrpo.exec(commandName, preparedArgs.options)
+  const execution = mrpo.exec(commandName, preparedArgs.options)
 
   function stop(args) {
     if (running) {
@@ -56,14 +56,15 @@ async function main(argv = process.argv) {
       return execution.stop()
     }
   }
-  execution.result.finally(() => {
+
+  execution.finally(() => {
     running = false
     process.off("SIGINT", stop)
   })
 
   process.on("SIGINT", stop)
 
-  return execution.result
+  return execution
 }
 
 if (require.main === module) {

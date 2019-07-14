@@ -13,44 +13,18 @@ const resolveBuildPackage = id =>
     paths: [__dirname]
   })
 
-class JavaScriptPkgBundler {
-  constructor(targetDir, config = {}) {
-    this.targetDir = targetDir
-    this.config = config
-
-    /** @type {Object.<string, import('execa').ExecaChildProcess>} */
-    this._running = {}
-  }
-
-  async listCommands() {
-    return ["build"]
-  }
-
-  async start(commandName, args = {}) {
-    switch (commandName) {
-      case "build":
-        return this.build(args)
-      default:
-        throw new Error(`Invalid command ${commandName}`)
-    }
-  }
-
-  async stop(commandName) {
-    if (this._running[commandName]) {
-      // This will be an execa execution instance
-      this._running[commandName]
-    }
-  }
-
-  async build(args) {
+module.exports = {
+  /** @type {import('execa').ExecaChildPromise} */
+  execution: null,
+  async start(args, config) {
     const packBin = resolveBin("pack")
 
-    const buildPath = generateBuildPath(this.config.name)
+    const buildPath = generateBuildPath(config.name)
     await fs.ensureDir(buildPath)
     const packageJsonPath = path.resolve(buildPath, "package.json")
 
     await fs.ensureSymlink(
-      path.resolve(this.targetDir, "src"),
+      path.resolve(config.cwd, "src"),
       path.resolve(buildPath, "src")
     )
 
@@ -58,8 +32,8 @@ class JavaScriptPkgBundler {
       packageJsonPath,
       JSON.stringify(
         {
-          name: this.config.name,
-          version: this.config.version,
+          name: config.name,
+          version: config.version,
           main: path.resolve(buildPath, "src", "index.js"),
           "@pika/pack": {
             pipeline: [
@@ -78,7 +52,7 @@ class JavaScriptPkgBundler {
       )
     )
 
-    const execution = (this._running.build = execa(packBin, [
+    const execution = (this.execution = execa(packBin, [
       "build",
       "--cwd",
       buildPath
@@ -91,11 +65,12 @@ class JavaScriptPkgBundler {
       this._running.build = null
     })
 
-    const distPath = path.resolve(this.targetDir, "dist")
+    const distPath = path.resolve(config.cwd, "dist")
     await fs.remove(distPath)
     await fs.move(path.resolve(buildPath, "pkg"), distPath)
     await fs.remove(buildPath)
+  },
+  async stop() {
+    this.execution.kill()
   }
 }
-
-module.exports = JavaScriptPkgBundler

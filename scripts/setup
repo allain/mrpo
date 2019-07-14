@@ -3,7 +3,7 @@
 # This is temporary while developing
 
 npm install
-cd bundlers/javascript-pkg-bundler
+cd executors/javascript-pkg-executor
 npm install
 cd ../../
 npm install -g

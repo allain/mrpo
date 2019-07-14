@@ -5,108 +5,128 @@ const collect = require("collect-console")
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const debug = require("debug")("mrpo:test")
 describe("mrpo", () => {
-  it("can be constructed by passing an object for config", async () => {
-    const output = await collect.log(async () => {
-      const mrpo = await MrPo.build({
-        targetDir: "/tmp",
-        name: "test",
-        version: "1.0.0",
-        bundler: path.resolve(__dirname, "test-bundlers", "test-bundler")
-      })
-      const execution = await mrpo.exec("hello")
-      return execution.result
-    })
-    expect(output).toEqual(["HELLO with args {}"])
-  })
-
-  it("rejects when build config object does not contain targetDir", async () => {
-    return expect(
+  it("rejects if it cannot determine executor", async () => {
+    expect(
       MrPo.build({
         name: "test",
         version: "1.0.0",
-        bundler: path.resolve(__dirname, "test-bundlers", "test-bundler")
+        executor: []
       })
+    ).rejects.toThrow("invalid executor spec: []")
+  })
+
+  it("rejects if build param is not object or string", async () => {
+    await expect(MrPo.build(true)).rejects.toThrow("invalid MrPo config: true")
+    await expect(MrPo.build(false)).rejects.toThrow(
+      "invalid MrPo config: false"
+    )
+    await expect(MrPo.build(null)).rejects.toThrow("invalid MrPo config: null")
+    await expect(MrPo.build()).rejects.toThrow("invalid MrPo config: undefined")
+  })
+
+  it("rejects if project path does not exist", async () => {
+    return expect(
+      MrPo.build(path.resolve(__dirname, "test-fixtures/test-missing"))
+    ).rejects.toThrow(/^could not find mrpo.json file in .*test-missing.*$/)
+  })
+
+  it("rejects if project path does not contain mrpo.json file", async () => {
+    return expect(
+      MrPo.build(path.resolve(__dirname, "test-fixtures/test-missing-mrpo"))
     ).rejects.toThrow(
-      "targetDir property must be given when building MrPo from object"
+      /^could not find mrpo.json file in .*test-missing-mrpo.*$/
     )
   })
 
-  it("bundler can be an object passed into MrPo.build", async () => {
-    const output = await collect.log(async () => {
-      const mrpo = await MrPo.build({
-        targetDir: "/tmp",
-        name: "test",
-        version: "1.0.0",
-        bundler: {
-          async listCommands() {
-            return "test"
-          },
-          async start(commandName) {
-            console.log(commandName)
-          }
-        }
-      })
-      const execution = await mrpo.exec("test")
-      return execution.result
-    })
-
-    expect(output).toEqual(["test"])
-  })
-
-  it("exposes listCommands", async () => {
+  it("can be constructed by passing path to mrpo project", async () => {
     const mrpo = await MrPo.build(
       path.resolve(__dirname, "test-fixtures", "test-pkg")
     )
-    expect(mrpo.listCommands).toBeInstanceOf(Function)
-    const commandsResult = mrpo.listCommands()
-    expect(commandsResult).toBeInstanceOf(Promise)
-    const commands = await commandsResult
-    expect(Array.isArray(commands)).toBe(true)
-  })
 
-  it("queries bundler for commands", async () => {
-    const mrpo = await MrPo.build(
-      path.resolve(__dirname, "test-fixtures", "test-pkg")
-    )
-    expect(await mrpo.listCommands()).toEqual([
-      "hello",
+    return expect(await mrpo.listCommands()).toEqual([
+      "asyncError",
+      "asynchronous",
       "forever",
-      "error",
-      "success"
+      "syncError",
+      "synchronous"
     ])
   })
 
-  it("exposes exec command", async () => {
-    const mrpo = await MrPo.build(
-      path.resolve(__dirname, "test-fixtures", "test-pkg")
-    )
-    expect(mrpo.exec).toBeInstanceOf(Function)
-    const execResult = mrpo.exec("succeed")
-    expect(execResult).toBeInstanceOf(Promise)
-    const execution = await execResult
-    expect(execution.result).toBeInstanceOf(Promise)
-    expect(execution.stop).toBeInstanceOf(Function)
-  })
-
-  it("actually calls start on bundler when exec is performed", async () => {
-    const output = await collect.log(async () => {
-      const mrpo = await MrPo.build(
-        path.resolve(__dirname, "test-fixtures", "test-pkg")
-      )
-      const execution = await mrpo.exec("hello")
-      return execution.result
+  it("can be constructed by passing an object for config", async () => {
+    const mrpo = await MrPo.build({
+      cwd: "/tmp",
+      name: "test",
+      version: "1.0.0",
+      executor: path.resolve(__dirname, "test-executor")
     })
-    expect(output).toHaveLength(1)
-    expect(output).toEqual(["HELLO with args {}"])
+    expect(mrpo).toBeDefined()
   })
 
-  it("actually calling stop() causes result promise to resolve", async () => {
-    const mrpo = await MrPo.build(
-      path.resolve(__dirname, "test-fixtures", "test-pkg")
-    )
-    const execution = await mrpo.exec("forever", { interval: 1000 })
+  it("returns command names in alphabetical order", async () => {
+    const mrpo = await MrPo.build({
+      cwd: "/tmp",
+      name: "test",
+      version: "1.0.0",
+      executor: require("./test-executor")
+    })
+
+    const commandNames = await mrpo.listCommands()
+    expect([...commandNames]).toEqual(commandNames.sort())
+  })
+
+  it("works when executor is given as path to executor", async () => {
+    const mrpo = await MrPo.build({
+      cwd: "/tmp",
+      name: "test",
+      version: "1.0.0",
+      executor: path.resolve(__dirname, "./test-executor")
+    })
+
+    const commandNames = await mrpo.listCommands()
+    expect(commandNames).not.toHaveLength(0)
+  })
+
+  it("exposes exec command", async () => {
+    const mrpo = await MrPo.build({
+      cwd: "/tmp",
+      name: "test",
+      version: "1.0.0",
+      executor: require("./test-executor")
+    })
+    expect(mrpo.exec).toBeInstanceOf(Function)
+    const execResult = mrpo.exec("synchronous")
+    expect(execResult.then).toBeInstanceOf(Function)
+    expect(execResult.catch).toBeInstanceOf(Function)
+    expect(execResult.cancel).toBeInstanceOf(Function)
+    return execResult
+  })
+
+  it("actually calls methods on executor when exec is performed", async () => {
+    const executor = require("./test-executor")
+    executor.synchronous = jest.fn(executor.synchronous)
+    const config = {
+      cwd: "/tmp",
+      name: "test",
+      version: "1.0.0",
+      executor
+    }
+    const mrpo = await MrPo.build(config)
+
+    await mrpo.exec("synchronous")
+    expect(executor.synchronous).toHaveBeenCalledWith({}, config)
+  })
+
+  it("canceling an exec causes result promise to resolve", async () => {
+    const mrpo = await MrPo.build({
+      cwd: "/tmp",
+      name: "test",
+      version: "1.0.0",
+      executor: require("./test-executor")
+    })
+
+    const execution = mrpo.exec("forever", { interval: 1 })
     await sleep(20)
-    await execution.stop()
-    return execution.result
+    execution.cancel()
+    return execution
   })
 })

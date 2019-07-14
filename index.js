@@ -1,1 +1,1 @@
-module.exports = require("./src/mrpo")
+module.exports = require("./src/MrPo")

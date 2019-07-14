@@ -1,5 +1,5 @@
 {
-  "name": "forever-pkg",
+  "name": "test-pkg",
   "version": "0.1.0",
-  "bundler": "../../test-bundlers/test-bundler"
+  "executor": "../../test-executor"
 }

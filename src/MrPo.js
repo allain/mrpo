@@ -1,0 +1,114 @@
+const fs = require("fs-extra")
+const path = require("path")
+const debug = require("debug")("mrpo")
+const chalk = require("chalk")
+const CancelablePromise = require("p-cancelable")
+const Executor = require("./Executor")
+
+const isObject = require("./lib/is-object")
+
+class MrPoException extends Error {
+  constructor(message, context = {}) {
+    super(message)
+    Object.assign(this, context)
+  }
+}
+
+/**
+ * @typedef {Object} Execution
+ * @property {Function} stop
+ * @property {Promise} result
+ */
+
+class MrPo {
+  /**
+   *
+   * @param {{cwd:string, executor:Executor, name:string, version:string}}options
+   */
+  constructor(options) {
+    const { executor, ...config } = options
+    this._executor = executor
+    this._config = config
+  }
+
+  async listCommands() {
+    const commandNames = await this._executor.listCommands()
+
+    return commandNames.sort()
+  }
+
+  /**
+   *
+   * @param {string} commandName
+   * @param {Object.<string,any>} args
+   * @returns {CancelablePromise}
+   */
+  exec(commandName, args = {}) {
+    return new CancelablePromise((resolve, reject, onCancel) => {
+      /** @type {CancelablePromise} */
+      const result = this._executor.exec(commandName, args)
+
+      onCancel.shouldReject = false
+      onCancel(() => result.cancel())
+      result.then(resolve, reject)
+    })
+  }
+}
+
+/**
+ * @param {any[]} args
+ * @returns {Promise<Object>}
+ */
+async function prepareInfo(info) {
+  // load config from mrpo.json file in target directory
+  if (typeof info === "string") {
+    let cwd = info
+    const mrpoConfigPath = path.resolve(cwd, "mrpo.json")
+    if (!(await fs.pathExists(mrpoConfigPath))) {
+      throw new MrPoException(`could not find mrpo.json file in ${cwd}`, {
+        cwd
+      })
+    }
+
+    info = JSON.parse(await fs.readFile(mrpoConfigPath, "utf-8"))
+    info.cwd = cwd
+    return info
+  } else if (isObject(info)) {
+    info.cwd = info.cwd || process.cwd()
+    return info
+  }
+
+  throw new MrPoException(`invalid MrPo config: ${JSON.stringify(info)}`, info)
+}
+
+async function prepareExecutor(info) {
+  let { cwd, executor } = info
+  if (typeof executor === "string") {
+    const executorPath = require.resolve(path.resolve(cwd, executor))
+
+    if (await fs.pathExists(executorPath)) {
+      debug("using executor at %s", chalk.green(executorPath))
+      executor = require(executorPath)
+    }
+  }
+
+  if (isObject(executor) && !(executor instanceof Executor)) {
+    // executor is a commands map
+    executor = new Executor(executor, info)
+  }
+
+  if (!(executor instanceof Executor)) {
+    throw new Error(`invalid executor spec: ${JSON.stringify(executor)}`)
+  }
+
+  return executor
+}
+
+module.exports = {
+  async build(config) {
+    const info = await prepareInfo(config)
+    const executor = await prepareExecutor(info)
+
+    return new MrPo({ ...info, executor })
+  }
+}

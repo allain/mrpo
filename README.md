@@ -25,21 +25,20 @@ As much as possible my toolchain should get out of my way.
 
 Install mrpo globally `npm install --global mrpo`
 
-Create a minimalistic mrpo.json file and declare what mrpo bundler the project uses:
+Create a minimalistic mrpo.json file and declare what mrpo executor the project uses:
 
 ```json
 {
   "name": "example1",
   "version": "1.0.0",
-  "bundler": "@mrpo/typescript-pkg-bundler@^1.0.0"
+  "executor": "@mrpo/typescript-pkg-executor@^1.0.0"
 }
 ```
 
-Run commands using mrpo. Commands are exposed by the bundler:
+Run commands using mrpo. Commands are exposed by the executor:
 
 ```bash
-# display available commands
-mrpo
+mrpo #to display a list of available commands
 mrpo build
 mrpo clean
 mrpo publish
@@ -51,28 +50,28 @@ mrpo test --watch
 
 Things to note:
 
-1. mrpo.json does not declare dependencies or devDependencies. The bundler infers them based on static analysis of the source code, but that's up to the bundler. the mrpo config depends on the bundler being used.
+1. mrpo.json does not declare dependencies or devDependencies. The executor infers them based on static analysis of the source code, but that's up to the executor. the mrpo config depends on the executor being used.
 2. The actual type specification can be anything, I'm using npm modules, but they could just as easily be docker images, so in principle the mrpo could be used to build go aswell.
 
 ## Monorepos
 
-Monorepos are just mrpo projects based on metarepo bundler templates
+Monorepos are just mrpo projects based on metarepo exector.
 
 ```json
 {
   "name": "example-monorepo",
   "version": "1.0.0",
-  "bundler": "@mrpo/bundler-monorepo"
+  "executor": "@mrpo/executor-monorepo"
 }
 ```
 
-The monorepo bundler will walk the directory structure looking for nested `mrpo.json` files and expose all of their commands.
+The monorepo executor will walk the directory structure looking for nested `mrpo.json` files and expose all of their commands.
 
 Running `mrpo build` would do some dependency analysis on the sub projects and infer a sequence in which to run "mrpo build recursively on them".
 
-## Bundler API
+## Executor API
 
-In order to have things be as flexible as possible, the bundlers should provide an API that's trivial
+In order to have things be as flexible as possible, the executor should provide an API that's trivial
 
 It would need to support:
 
@@ -93,6 +92,6 @@ In the JavaScript world we could just export an object:
 For things like exposing dockerfile builds we could just call out to a shell command that conforms to the same API.
 
 ```bash
-./bundler # outputs command names on separate lines
-./bundler command #runs the command and stays running till done or terminated by sending a nice SIGINT
+./executor # outputs command names on separate lines
+./executor command #runs the command and stays running till done or terminated by sending a nice SIGINT
 ```
