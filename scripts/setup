@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# This is temporary while developing
-
-npm install
-cd executors/javascript-pika-executor
-npm install
-cd ../../
-npm install -g

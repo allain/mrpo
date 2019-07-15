@@ -1,7 +1,6 @@
 const fs = require("fs-extra")
 const path = require("path")
 const debug = require("debug")("mrpo")
-const chalk = require("chalk")
 const CancelablePromise = require("p-cancelable")
 const Executor = require("./Executor")
 const SimpleExecutor = require("./SimpleExecutor")
@@ -92,7 +91,7 @@ async function prepareExecutor(info) {
   if (typeof executor === "string") {
     try {
       const executorPath = require.resolve(executor, { paths: [cwd] })
-      debug("using executor at %s", chalk.green(executorPath))
+      debug("using executor at %s", executorPath)
       executor = require(executorPath)
     } catch (err) {
       console.log("installing executor", executor)

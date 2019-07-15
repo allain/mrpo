@@ -4,7 +4,7 @@ An experiment on writing a near invisible developer toolchain.
 
 ## Pain Points
 
-I absolutely hate having to mainting toolchains for my projects. Dependency management alone is enough to drive me to drink.
+I absolutely hate having to maintain toolchains for my projects. Dependency management alone is enough to drive me to drink.
 As much as possible my toolchain should get out of my way.
 
 ## Ideas
