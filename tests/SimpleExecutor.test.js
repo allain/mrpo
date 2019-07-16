@@ -4,8 +4,20 @@ const CancelablePromise = require("p-cancelable")
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe("Executor", () => {
+  it("should thrown when commands map is not an object", () => {
+    expect(() => new SimpleExecutor()).toThrow(
+      /^invalid command map: undefined$/
+    )
+    expect(() => new SimpleExecutor(false)).toThrow(
+      /^invalid command map: false$/
+    )
+    expect(() => new SimpleExecutor([])).toThrow(
+      "command map may not be an array. Did you mean to use a CompositeExecutor?"
+    )
+  })
+
   it("can be created empty", async () => {
-    const executor = new SimpleExecutor()
+    const executor = new SimpleExecutor({})
     return expect(await executor.listCommands()).toEqual([])
   })
 

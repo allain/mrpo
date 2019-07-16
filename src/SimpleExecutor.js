@@ -3,8 +3,18 @@ const Executor = require("./Executor")
 const isObject = require("./lib/is-object")
 
 class SimpleExecutor extends Executor {
-  constructor(commands = {}, config = {}) {
+  constructor(commands, config = {}) {
     super()
+
+    if (!isObject(commands)) {
+      if (Array.isArray(commands)) {
+        throw new TypeError(
+          "command map may not be an array. Did you mean to use a CompositeExecutor?"
+        )
+      } else {
+        throw new TypeError(`invalid command map: ${JSON.stringify(commands)}`)
+      }
+    }
     this._commands = commands
     this._config = config
   }
