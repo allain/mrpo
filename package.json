@@ -8,6 +8,7 @@
     "example": "examples"
   },
   "dependencies": {
+    "debug": "^4.1.1",
     "fs-extra": "^8.1.0",
     "minimist": "^1.2.0",
     "p-cancelable": "^2.0.0"
@@ -16,7 +17,6 @@
     "@types/debug": "^4.1.4",
     "@types/jest": "^24.0.15",
     "collect-console": "^1.0.1",
-    "debug": "^4.1.1",
     "jest": "^24.8.0"
   },
   "scripts": {
