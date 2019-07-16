@@ -17,13 +17,14 @@ As much as possible my toolchain should get out of my way.
 
 Install mrpo globally `npm install --global mrpo`
 
-Create a minimalistic mrpo.json file and declare what mrpo executor the project uses:
+Create a minimalistic mrpo.json file and declare what mrpo executor(s) the project uses:
 
-```json
+```
 {
-  "name": "example1",
-  "version": "1.0.0",
-  "executor": "mrpo-executor-pika-js"
+  "executors": [
+    "mrpo-executor-pika-js",
+    "mrpo-executor-auto-deps"
+  ]
 }
 ```
 
@@ -32,14 +33,13 @@ Run commands using mrpo. Commands are exposed by the executor:
 ```bash
 mrpo #to display a list of available commands
 mrpo build
-mrpo dev
 mrpo deps
 ```
 
-Things to note:
+With the executors above:
 
-1. mrpo.json does not declare dependencies or devDependencies (unless you want to pin something down). They are infered by the executor using static analysis.
-2. The actual type specification can be anything, I'm using npm modules, but they could just as easily be docker images, so in principle the mrpo could be used to build go aswell.
+1. module dependencies are automatically installed and removed as you code. They are inferred by using static analysis.
+2. npm packages will be built using the excellent tool pika
 
 ## Monorepos
 
