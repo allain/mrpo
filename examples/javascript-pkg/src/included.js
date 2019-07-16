@@ -1,9 +1,8 @@
 import toLower from "lodash.tolower"
-import toUpper from "lodash.toupper"
-import flatten from "lodash.flatten"
+// import flatten from "lodash.flatten"
+import _ from "lodash"
 
 export default function greet() {
-  console.log(toLower("HELLO"))
-  console.log(toUpper("hello"))
-  console.log(flatten([[1], [2]]))
+  // console.log(toLower("HELLO"))
+  // console.log(flatten([[1], [2]]))
 }

@@ -1,0 +1,8 @@
+{
+  "name": "javascript-example",
+  "version": "0.1.0",
+  "dependencies": {
+    "mrpo-executor-auto-deps": "^0.1.2",
+    "mrpo-executor-pika-js": "^0.2.0"
+  }
+}

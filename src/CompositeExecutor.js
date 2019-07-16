@@ -7,20 +7,12 @@ class CompositeExecutor extends Executor {
   constructor(executors = []) {
     super()
 
-    this._executors = executors.map(this._prepareExecutor)
-    this._commandsMap = null
-  }
-
-  _prepareExecutor(executor) {
-    if (!isObject(executor)) {
-      throw new Error(
-        `invalid executor provided for composition: ${JSON.stringify(executor)}`
-      )
+    if (executors.some(e => !(e instanceof Executor))) {
+      throw new TypeError("provided exectors are not all instances of Executor")
     }
 
-    return executor instanceof Executor
-      ? executor
-      : new SimpleExecutor(executor)
+    this._executors = executors
+    this._commandsMap = null
   }
 
   async _buildCommandsMap() {

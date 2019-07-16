@@ -1,5 +1,3 @@
 {
-  "name": "javascript-example",
-  "version": "0.1.0",
-  "executor": "mrpo-executor-pika-js"
+  "executors": ["mrpo-executor-pika-js", "mrpo-executor-auto-deps"]
 }

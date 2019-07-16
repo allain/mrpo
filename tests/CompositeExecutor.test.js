@@ -41,15 +41,16 @@ describe("CompositeExecutor", () => {
     expect(composite).toBeInstanceOf(Executor)
   })
 
-  it("can turn objects into SimpleExecutors", async () => {
-    const composite = new CompositeExecutor([{ test() {} }])
-    expect(composite).toBeInstanceOf(Executor)
-    expect(await composite.listCommands()).toEqual(["test"])
+  it("throws if given something other than an array of Executors", async () => {
+    expect(() => new CompositeExecutor({ test() {} })).toThrow()
   })
 
   it("only returns unique command names", async () => {
     // a is duplicate
-    const composite = new CompositeExecutor([{ a() {} }, { a() {}, b() {} }])
+    const composite = new CompositeExecutor([
+      new SimpleExecutor({ a() {} }),
+      new SimpleExecutor({ a() {}, b() {} })
+    ])
     expect(composite).toBeInstanceOf(Executor)
     expect(await composite.listCommands()).toEqual(["a", "b"])
   })
@@ -63,7 +64,10 @@ describe("CompositeExecutor", () => {
       }
     }
 
-    const composite = new CompositeExecutor([e1, e2])
+    const composite = new CompositeExecutor([
+      new SimpleExecutor(e1),
+      new SimpleExecutor(e2)
+    ])
     await composite.exec("test")
     expect(e1.test).toHaveBeenCalled()
     expect(e2.test.start).toHaveBeenCalled()
@@ -73,7 +77,10 @@ describe("CompositeExecutor", () => {
     const e1 = { test: buildForeverAction("A") }
     const e2 = { test: buildForeverAction("B") }
 
-    const composite = new CompositeExecutor([e1, e2])
+    const composite = new CompositeExecutor([
+      new SimpleExecutor(e1),
+      new SimpleExecutor(e2)
+    ])
     const output = await collect.log(async () => {
       const execution = composite.exec("test")
       await sleep(100)
@@ -97,7 +104,9 @@ describe("CompositeExecutor", () => {
       }
     }
 
-    const composite = new CompositeExecutor([e1, e2, e3])
+    const composite = new CompositeExecutor(
+      [e1, e2, e3].map(e => new SimpleExecutor(e))
+    )
     const output = await collect.log(async () => {
       const execution = composite.exec("test")
       await sleep(100)

@@ -86,8 +86,22 @@ async function prepareInfo(info) {
   throw new MrPoException(`invalid MrPo config: ${JSON.stringify(info)}`, info)
 }
 
-async function prepareExecutor(info) {
-  let { cwd, executor } = info
+async function prepareExecutors(info) {
+  const executors = info.executors || [info.executor]
+  const preparedExecutors = []
+  for (const executor of executors) {
+    preparedExecutors.push(await prepareExecutor(executor, info))
+  }
+
+  if (preparedExecutors.length > 1) {
+    return new CompositeExecutor(preparedExecutors)
+  } else {
+    return preparedExecutors[0]
+  }
+}
+
+async function prepareExecutor(executor, info) {
+  let { cwd } = info
   if (typeof executor === "string") {
     try {
       const executorPath = require.resolve(executor, { paths: [cwd] })
@@ -123,8 +137,10 @@ async function prepareExecutor(info) {
 module.exports = {
   async build(config) {
     const info = await prepareInfo(config)
-    const executor = await prepareExecutor(info)
+    const executor = await prepareExecutors(info)
 
-    return new MrPo({ ...info, executor })
+    const preparedConfig = { ...info, executor }
+    delete preparedConfig.executors
+    return new MrPo(preparedConfig)
   }
 }
